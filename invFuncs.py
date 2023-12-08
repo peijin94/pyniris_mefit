@@ -2,7 +2,7 @@ import numpy as np
 
 import numba as nb
 
-@nb.jit
+@nb.njit
 def ch_voigt(a, u):
     # Constants for the calculation
     a0 = 122.607931777104326
@@ -90,7 +90,7 @@ def niris_MEsinglet(x, B , theta ,chi ,eta0 ,dlambdaD ,a ,lambda0 ,B0 ,B1 ):
 import numpy as np
 from scipy.optimize import curve_fit
 
-@nb.jit
+@nb.njit
 def get_noise(data1d):
     # Perform convolution
     a = np.convolve(data1d, [-1, 2, -1], mode='valid')
@@ -117,13 +117,14 @@ def niris_mefit(x, data, par, function_to_fit):
 
     dataIQUV = np.concatenate([data[:,i] for i in range(4)])
     result, covar = curve_fit(function_to_fit, x, dataIQUV
-        , p0=par, bounds=bounds, maxfev=300, xtol=5e-5)
+        , p0=par, bounds=bounds, maxfev=300, xtol=5e-5,
+        method='trf')
 
     return result
 
 import numpy as np
 
-@nb.jit
+@nb.njit
 def niris_cogmag(wv, idata, vdata):
     geff = 3.0
     lambda_rest = 15648.5
